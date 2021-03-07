@@ -14,23 +14,13 @@ const getTokenAndSetAuth = (url, payload, context) => {
 		const token = data.access_token
 		const refreshToken = data.refresh_token
 		const isTwoFactorAuthenticationEnabled = data.isTwoFactorAuthenticationEnabled
-		const hourInMs = 3000000
-		const expirationDate = Date.now() + hourInMs
 		if (
 			(!isCode && !isTwoFactorAuthenticationEnabled) ||
 			(isCode && isTwoFactorAuthenticationEnabled)
 		) {
-			setTimeout(async () => {
-				await context.dispatch('getRefreshToken', {
-					token: refreshToken,
-					isActive2FA: isTwoFactorAuthenticationEnabled,
-				})
-			}, hourInMs)
-
-			setAuthData(token, refreshToken, expirationDate, Boolean(payload.isRemember), true)
+			setAuthData(token, refreshToken, Boolean(payload.isRemember), true)
 			const authData = {
 				token,
-				expirationDate,
 				isRemember: payload.isRemember,
 				isAuth: true,
 				isActive2FA: isTwoFactorAuthenticationEnabled,
@@ -47,7 +37,7 @@ const getTokenAndSetAuth = (url, payload, context) => {
 				token,
 			}
 			context.commit(types.SET_AUTH, authData)
-			setAuthData(token, refreshToken, expirationDate, Boolean(payload.isRemember), false)
+			setAuthData(token, refreshToken, Boolean(payload.isRemember), false)
 			context.commit(types.TOGGLE_LOADING, false)
 		}
 	} catch (error) {
@@ -76,15 +66,7 @@ export const actions = {
 			if (token && refreshToken) {
 				const isRemember =
 					getFromLocalStorage('isRemember') || getFromSessionStorage('isRemember')
-				const hourInMs = 3000000
-				const expirationDate = Date.now() + hourInMs
-				setTimeout(async () => {
-					await context.dispatch('getRefreshToken', {
-						token: refreshToken,
-						isActive2FA: payload.isActive2FA,
-					})
-				}, hourInMs)
-				setAuthData(token, refreshToken, expirationDate, isRemember, true)
+				setAuthData(token, refreshToken, isRemember, true)
 				const authData = { isActive2FA: payload.isActive2FA }
 				context.commit(types.SET_AUTH, authData)
 			}

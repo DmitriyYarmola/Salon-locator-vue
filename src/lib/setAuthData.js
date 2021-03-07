@@ -1,15 +1,13 @@
-import { setToLocalStorage } from './LocalStorage'
-import { setToSessionStorage } from './SessionStorage'
+import { setToLocalStorage } from './localStorage'
+import { setToSessionStorage } from './sessionStorage'
 
-export const setAuthData = (token, refreshToken, expirationDate, isRemember, isAuth) => {
+export const setAuthData = (token, refreshToken, isRemember, isAuth) => {
 	if (isRemember) {
-		setToLocalStorage('expiration', expirationDate)
 		setToLocalStorage('token', token)
 		setToLocalStorage('refreshToken', refreshToken)
 		setToLocalStorage('isRemember', isRemember)
 		setToLocalStorage('isAuth', isAuth)
 	} else {
-		setToSessionStorage('expiration', expirationDate)
 		setToSessionStorage('token', token)
 		setToSessionStorage('refreshToken', refreshToken)
 		setToSessionStorage('isRemember', isRemember)

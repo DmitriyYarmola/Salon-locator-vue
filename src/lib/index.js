@@ -1,5 +1,5 @@
-export * from './LocalStorage'
-export * from './SessionStorage'
+export * from './localStorage'
+export * from './sessionStorage'
 export * from './setAuthData'
 export * from './store'
 export * from './validations'

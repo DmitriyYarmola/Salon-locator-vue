@@ -1,13 +1,16 @@
 <template>
-	<div>
+	<AdminTemplate>
 		123
-	</div>
+	</AdminTemplate>
 </template>
 
 <script>
+import { AdminTemplate } from '@/components'
 export default {
 	name: 'App',
-	components: {},
+	components: {
+		AdminTemplate,
+	},
 }
 </script>
 
