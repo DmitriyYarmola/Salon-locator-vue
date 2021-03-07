@@ -1,15 +1,14 @@
 <template>
-	<AdminTemplate>
-		123
-	</AdminTemplate>
+	<MainTemplate> <router-view></router-view></MainTemplate>
 </template>
 
 <script>
-import { AdminTemplate } from '@/components'
+import { MainTemplate } from '@/components'
+
 export default {
 	name: 'App',
 	components: {
-		AdminTemplate,
+		MainTemplate,
 	},
 }
 </script>

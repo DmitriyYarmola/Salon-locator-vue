@@ -1,3 +1,3 @@
-import AdminTemplate from './AdminTemplate'
+import MainTemplate from './MainTemplate'
 
-export { AdminTemplate }
+export { MainTemplate }
