@@ -1,10 +1,10 @@
 <template>
 	<div>
-		<div v-if="isAdmin">
+		<div v-if="!isAdmin">
 			<slot />
 		</div>
 		<div v-else>
-			<AdminTemplate><slot /></AdminTemplate>
+			<AdminTemplate sidebar="sidebar"><slot /></AdminTemplate>
 		</div>
 	</div>
 </template>
@@ -16,7 +16,11 @@ import { useRoute, useRouter } from 'vue-router'
 
 export default {
 	components: { AdminTemplate },
-	data: () => {},
+	data: () => ({
+		sidebar: {
+			type: String,
+		},
+	}),
 	setup() {
 		const route = useRoute()
 		const router = useRouter()

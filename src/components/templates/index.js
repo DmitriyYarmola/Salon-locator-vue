@@ -1,3 +1,4 @@
 import MainTemplate from './MainTemplate'
+import ModalTemplate from './ModalTemplate'
 
-export { MainTemplate }
+export { MainTemplate, ModalTemplate }

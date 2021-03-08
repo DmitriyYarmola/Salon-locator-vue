@@ -1,6 +1,6 @@
 <template>
 	<div :class="$style.template">
-		<!--		<div :class="$style.sideBar" v-html="sidebar" />-->
+		<div :class="$style.sideBar" v-html="sidebar" />
 		<main :class="$style.content">
 			<slot />
 		</main>

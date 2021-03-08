@@ -1,5 +1,5 @@
 <template>
-	<MainTemplate> <router-view></router-view></MainTemplate>
+	<MainTemplate sidebar="<div>12312</div>"> <router-view></router-view></MainTemplate>
 </template>
 
 <script>
