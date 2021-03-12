@@ -1,16 +1,11 @@
 import { API, apiUrls } from '@/api'
-import {
-	// getFromLocalStorage,
-	// getFromSessionStorage,
-	setAuthData,
-	validationErrors,
-} from '@/lib'
+import { setAuthData, validationErrors } from '@/lib'
 import * as types from './auth.types'
 
-const getTokenAndSetAuth = (url, payload, context) => {
+const getTokenAndSetAuth = async (url, payload, context) => {
 	const { isCode, ...rest } = payload
 	try {
-		const { data } = API().post(url, rest)
+		const { data } = await API().post(url, rest)
 		const token = data.access_token
 		const refreshToken = data.refresh_token
 		const isTwoFactorAuthenticationEnabled = data.isTwoFactorAuthenticationEnabled
@@ -51,7 +46,6 @@ const getTokenAndSetAuth = (url, payload, context) => {
 
 export const actions = {
 	getToken: (context, payload) => {
-		console.log(payload)
 		try {
 			getTokenAndSetAuth(apiUrls.login, payload, context)
 		} catch (error) {

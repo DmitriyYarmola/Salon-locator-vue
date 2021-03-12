@@ -43,7 +43,10 @@
     "parserOptions": {
       "parser": "babel-eslint"
     },
-    "rules": {}
+    "rules": {
+      "vue/no-setup-props-destructure": "off",
+      "vue/no-dupe-keys": "off"
+    }
   },
   "browserslist": [
     "> 1%",

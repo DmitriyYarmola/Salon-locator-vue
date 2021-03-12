@@ -2,7 +2,7 @@
 	<div v-if="!isLoading">
 		<ModalTemplate>
 			<LoginForm
-				error=""
+				:error="error"
 				:on-submit="onSubmit"
 				:on-submit-google-code="onSubmitGoogleCode"
 			/>

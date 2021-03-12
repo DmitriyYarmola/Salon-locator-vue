@@ -1,13 +1,12 @@
 <template>
 	<label class="wrapper" v-if="!withLabel">
 		<input
-			type="text"
+			:type="type"
 			:value="inputValue"
 			@input="e => onChangeValue(e.target.value)"
-			class="$style.input"
-			v-bind:placeholder="placeholder"
-			v-bind:class="{ border: isBorder }"
-			v-bind:id="`input-${name}`"
+			:placeholder="label"
+			:class="[$style.input, isBorder ? $style.border : '']"
+			:id="`input-${name}`"
 		/>
 		<label
 			for="`input-${name}`"
@@ -17,7 +16,7 @@
 	</label>
 	<label v-else>
 		<input
-			type="text"
+			:type="type"
 			:value="inputValue"
 			@input="e => onChangeValue(e.target.value)"
 			class="$style.input"
@@ -29,23 +28,42 @@
 </template>
 
 <script>
-import { toRefs, ref, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 export default {
-	setup(props) {
-		const {
-			onChange,
-			placeholder,
-			autoFocus,
-			isBorder,
-			onBlur,
-			type,
-			limitedCharacters,
-			defaultValue,
-			withLabel,
-			name,
-			maxSize,
-			onlyNumbers,
-		} = toRefs(props)
+	props: {
+		onChange: {
+			type: Function,
+			required: true,
+		},
+		placeholder: {
+			type: String,
+			required: true,
+		},
+		onBlur: Function,
+		isBorder: Boolean,
+		onlyNumbers: Boolean,
+		maxSize: Number,
+		name: String,
+		withLabel: Boolean,
+		defaultValue: String,
+		autoFocus: Boolean,
+		limitedCharacters: Boolean,
+		type: String,
+	},
+	setup({
+		onChange,
+		placeholder,
+		autoFocus,
+		isBorder,
+		onBlur,
+		type = 'text',
+		limitedCharacters,
+		defaultValue,
+		withLabel,
+		name,
+		maxSize,
+		onlyNumbers,
+	}) {
 		let inputValue = ref('')
 
 		onMounted(() => {
@@ -57,19 +75,19 @@ export default {
 				if (value.length <= (maxSize || 256)) {
 					if (onlyNumbers) {
 						inputValue = value.replace(/[^0-9+]+/g, '')
-						onChange.value(value.replace(/[^0-9+]+/g, ''))
+						onChange(value.replace(/[^0-9+]+/g, ''))
 					} else {
 						inputValue = value
-						onChange.value(value)
+						onChange(value)
 					}
 				}
 			} else if (!limitedCharacters) {
 				if (onlyNumbers) {
 					inputValue = value.replace(/[^0-9+]+/g, '')
-					onChange.value(value.replace(/[^0-9+]+/g, ''))
+					onChange(value.replace(/[^0-9+]+/g, ''))
 				} else {
 					inputValue = value
-					onChange.value(value)
+					onChange(value)
 				}
 			}
 		}
@@ -77,7 +95,7 @@ export default {
 		return {
 			onChangeValue,
 			onBlur,
-			placeholder,
+			label: placeholder,
 			autoFocus,
 			isBorder,
 			type,

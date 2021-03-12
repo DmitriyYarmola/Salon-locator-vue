@@ -1,5 +1,5 @@
 <template>
-	<span>
+	<span :class="$style.text">
 		<slot />
 	</span>
 </template>

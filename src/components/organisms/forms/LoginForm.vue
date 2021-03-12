@@ -1,19 +1,50 @@
 <template>
-	<form>
-		<h2 :class="$style.title">Sign In</h2>
+	<form @submit.prevent="onSubmitForm" :class="$style.form_wrapper">
+		<h1 :class="$style.title">Sign In</h1>
 		<div :class="$style.fields">
+			<div :class="$style.field">
+				<TextField
+					:on-change="onChangeEmail"
+					placeholder="Email"
+					:is-border="true"
+					name="email"
+				/>
+				<Error v-if="emailError">{{ emailError }}</Error>
+			</div>
 			<div>
-				<TextField :on-change="onChangeValue" />
+				<TextField
+					:on-change="onChangePassword"
+					placeholder="Password"
+					:is-border="true"
+					type="password"
+					name="password"
+				/>
+				<Error v-if="passwordError">{{ passwordError }}</Error>
+			</div>
+			<Error v-if="globalError">{{ globalError }}</Error>
+			<div :class="$style.actions">
+				<div :class="$style.checkbox_wrapper">
+					<Checkbox :on-change="onChangeIsRemember" />
+					<span>Stay in</span>
+				</div>
+				<Button :main-color="mainColor" type="submit" :isBackground="true"
+					>Sign In</Button
+				>
 			</div>
 		</div>
 	</form>
 </template>
 
 <script>
-import { TextField } from '@/components'
+import { TextField, Error, Button, Checkbox } from '@/components'
+import { ref, toRefs, watchEffect } from 'vue'
+import { validateEmail, validationErrors, getStaticColorFromName } from '@/lib'
 export default {
 	components: {
+		Error,
 		TextField,
+		Button,
+		Checkbox,
 	},
 	props: {
 		error: {
@@ -34,17 +65,66 @@ export default {
 		},
 	},
 	data: () => ({}),
-	setup() {
-		// const { onSubmit, onSubmitGoogleCode, isShow2FAForm, error } = toRefs(props)
-		// const onSubmitForm = () => {
-		//
-		// }
-		const onChangeValue = value => {
-			console.log('value', value)
+	setup(props) {
+		const { onSubmit, error } = toRefs(props)
+		let emailValue = ref('')
+		let passwordValue = ref('')
+		let isEmailFieldFocus = ref(false)
+		let isRemember = ref(false)
+		let emailError = ''
+		let passwordError = ''
+		let mainColor = getStaticColorFromName('secondary')
+
+		watchEffect(() => console.log(error))
+		const onChangeEmail = value => {
+			const isMaxLength = value.length <= 255
+			emailValue.value = value
+			if (value) {
+				if (isMaxLength) {
+					if (isEmailFieldFocus.value) {
+						if (!validateEmail(value)) emailError = validationErrors.wrongEmail
+						else emailError = ''
+					}
+				} else emailError = validationErrors.maxLength
+			} else {
+				emailError = validationErrors.required
+			}
+		}
+		const onChangePassword = value => {
+			const isMaxLength = value.length <= 255
+			if (value) {
+				if (isMaxLength) {
+					passwordError = ''
+				} else passwordError = validationErrors.maxLength
+			}
+			passwordValue.value = value
+		}
+
+		const onChangeIsRemember = value => {
+			isRemember.value = value
+		}
+
+		const onSubmitForm = () => {
+			if (!emailValue.value) emailError = validationErrors.required
+			if (!passwordValue.value) passwordError = validationErrors.required
+			if (emailValue.value && passwordValue.value)
+				onSubmit.value({
+					email: emailValue.value,
+					password: passwordValue.value,
+					isRemember: isRemember.value,
+				})
 		}
 
 		return {
-			onChangeValue,
+			onChangeEmail,
+			onChangePassword,
+			onChangeIsRemember,
+			isEmailFieldFocus,
+			emailError,
+			passwordError,
+			onSubmitForm,
+			globalError: error,
+			mainColor,
 		}
 	},
 }
@@ -52,6 +132,39 @@ export default {
 
 <style module lang="scss">
 .title {
-	color: red;
+	font-size: $big-size;
+	color: $dark;
+	font-weight: 500;
+	margin-bottom: 28px;
+}
+
+.fields {
+	display: grid;
+	grid-row-gap: 20px;
+	width: 320px;
+}
+
+.checkbox_wrapper {
+	display: grid;
+	grid-template-columns: repeat(2, max-content);
+	grid-column-gap: 10px;
+}
+
+.form_wrapper {
+	text-align: center;
+}
+
+.field {
+	text-align: left;
+}
+
+.actions {
+	display: grid;
+	grid-template-columns: repeat(2, max-content);
+	justify-content: space-between;
+	align-items: center;
+	button {
+		padding: 10px 20px;
+	}
 }
 </style>

@@ -2,6 +2,7 @@ import { setToLocalStorage } from './localStorage'
 import { setToSessionStorage } from './sessionStorage'
 
 export const setAuthData = (token, refreshToken, isRemember, isAuth) => {
+	console.log(isRemember)
 	if (isRemember) {
 		setToLocalStorage('token', token)
 		setToLocalStorage('refreshToken', refreshToken)

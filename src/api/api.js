@@ -14,7 +14,7 @@ export const createInstance = (refreshToken, googleMaps) => {
 	const instance = axios.create({
 		baseURL: googleMaps
 			? 'https://maps.googleapis.com/maps/api/geocode/'
-			: process.env.BASE_URL || 'https://api.salonlocator.stage.redentu.com',
+			: process.env.VUE_APP_BASE_URL || 'https://api.salonlocator.stage.redentu.com',
 		headers,
 	})
 
