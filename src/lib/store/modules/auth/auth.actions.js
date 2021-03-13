@@ -1,8 +1,13 @@
 import { API, apiUrls } from '@/api'
-import { setAuthData, validationErrors } from '@/lib'
+import {
+	getFromLocalStorage,
+	getFromSessionStorage,
+	setAuthData,
+	validationErrors,
+} from '@/lib'
 import * as types from './auth.types'
 
-const getTokenAndSetAuth = async (url, payload, context) => {
+const getTokenAndSetAuth = async (url, payload, context, resolve, reject) => {
 	const { isCode, ...rest } = payload
 	try {
 		const { data } = await API().post(url, rest)
@@ -23,6 +28,7 @@ const getTokenAndSetAuth = async (url, payload, context) => {
 			}
 			context.commit(types.SET_AUTH, authData)
 			context.commit(types.SET_ERROR, '')
+			resolve({ isAuth: true })
 		} else if (isTwoFactorAuthenticationEnabled && !isCode) {
 			context.commit(types.SET_ERROR, '')
 			context.commit(types.TOGGLE_ACTIVE_2_FA, true)
@@ -34,6 +40,7 @@ const getTokenAndSetAuth = async (url, payload, context) => {
 			context.commit(types.SET_AUTH, authData)
 			setAuthData(token, refreshToken, Boolean(payload.isRemember), false)
 			context.commit(types.TOGGLE_LOADING, false)
+			resolve({ isAuth: false })
 		}
 	} catch (error) {
 		const errorMessage = isCode
@@ -41,34 +48,45 @@ const getTokenAndSetAuth = async (url, payload, context) => {
 			: validationErrors.invalidCredentials
 		context.commit(types.SET_ERROR, errorMessage)
 		context.commit(types.TOGGLE_LOADING, false)
+		reject()
 	}
 }
 
 export const actions = {
 	getToken: (context, payload) => {
+		return new Promise((resolve, reject) => {
+			context.commit(types.TOGGLE_LOADING, true)
+			getTokenAndSetAuth(apiUrls.login, payload, context, resolve, reject)
+		})
+	},
+	getRefreshToken: ({ commit }, payload) => {
+		commit(types.TOGGLE_LOADING, true)
 		try {
-			getTokenAndSetAuth(apiUrls.login, payload, context)
+			return new Promise(resolve => {
+				const { data } = API(payload.token).post(apiUrls.refreshToken, {})
+				const token = data.access_token
+				const refreshToken = data.refresh_token
+				if (token && refreshToken) {
+					const isRemember =
+						getFromLocalStorage('isRemember') || getFromSessionStorage('isRemember')
+					setAuthData(token, refreshToken, isRemember, true)
+					const authData = { isActive2FA: payload.isActive2FA }
+					commit(types.SET_AUTH, authData)
+				}
+				commit(types.TOGGLE_LOADING, false)
+				resolve()
+			})
 		} catch (error) {
-			context.commit(types.SET_ERROR, validationErrors.invalidCredentials)
-			context.commit(types.TOGGLE_LOADING, false)
+			commit(types.TOGGLE_LOADING, false)
 		}
 	},
-	// getRefreshToken: (context, payload) => {
-	// 	try {
-	// 		const { data } = API(payload.token).post(apiUrls.refreshToken, {})
-	// 		const token = data.access_token
-	// 		const refreshToken = data.refresh_token
-	// 		if (token && refreshToken) {
-	// 			const isRemember =
-	// 				getFromLocalStorage('isRemember') || getFromSessionStorage('isRemember')
-	// 			setAuthData(token, refreshToken, isRemember, true)
-	// 			const authData = { isActive2FA: payload.isActive2FA }
-	// 			context.commit(types.SET_AUTH, authData)
-	// 		}
-	// 	} catch (error) {
-	// 		console.log(error)
-	// 	}
-	// },
+	sendGoogleCode: (context, payload) => {
+		console.log(payload)
+		return new Promise((resolve, reject) => {
+			context.commit(types.TOGGLE_LOADING, true)
+			getTokenAndSetAuth(apiUrls.sendGoogle2FACode, payload, context, resolve, reject)
+		})
+	},
 	// getUserProfile: context => {
 	// 	context.commit(types.TOGGLE_LOADING, true)
 	// 	try {

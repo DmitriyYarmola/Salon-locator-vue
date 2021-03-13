@@ -1,3 +1,4 @@
 import LoginForm from './LoginForm'
+import GoogleAuthForm from './GoogleAuthForm'
 
-export { LoginForm }
+export { LoginForm, GoogleAuthForm }

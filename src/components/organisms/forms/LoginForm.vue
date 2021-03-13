@@ -2,25 +2,21 @@
 	<form @submit.prevent="onSubmitForm" :class="$style.form_wrapper">
 		<h1 :class="$style.title">Sign In</h1>
 		<div :class="$style.fields">
-			<div :class="$style.field">
-				<TextField
-					:on-change="onChangeEmail"
-					placeholder="Email"
-					:is-border="true"
-					name="email"
-				/>
-				<Error v-if="emailError">{{ emailError }}</Error>
-			</div>
-			<div>
-				<TextField
-					:on-change="onChangePassword"
-					placeholder="Password"
-					:is-border="true"
-					type="password"
-					name="password"
-				/>
-				<Error v-if="passwordError">{{ passwordError }}</Error>
-			</div>
+			<Field
+				name="email"
+				:on-change="onChangeEmail"
+				:is-border="true"
+				placeholder="Email"
+				:error="emailError"
+			/>
+			<Field
+				name="password"
+				:on-change="onChangePassword"
+				:is-border="true"
+				placeholder="Password"
+				:error="passwordError"
+				type="password"
+			/>
 			<Error v-if="globalError">{{ globalError }}</Error>
 			<div :class="$style.actions">
 				<div :class="$style.checkbox_wrapper">
@@ -36,13 +32,13 @@
 </template>
 
 <script>
-import { TextField, Error, Button, Checkbox } from '@/components'
-import { ref, toRefs, watchEffect } from 'vue'
+import { Error, Button, Checkbox, Field } from '@/components'
+import { ref, toRefs } from 'vue'
 import { validateEmail, validationErrors, getStaticColorFromName } from '@/lib'
 export default {
 	components: {
+		Field,
 		Error,
-		TextField,
 		Button,
 		Checkbox,
 	},
@@ -75,7 +71,6 @@ export default {
 		let passwordError = ''
 		let mainColor = getStaticColorFromName('secondary')
 
-		watchEffect(() => console.log(error))
 		const onChangeEmail = value => {
 			const isMaxLength = value.length <= 255
 			emailValue.value = value
@@ -90,6 +85,7 @@ export default {
 				emailError = validationErrors.required
 			}
 		}
+
 		const onChangePassword = value => {
 			const isMaxLength = value.length <= 255
 			if (value) {
@@ -152,10 +148,6 @@ export default {
 
 .form_wrapper {
 	text-align: center;
-}
-
-.field {
-	text-align: left;
 }
 
 .actions {

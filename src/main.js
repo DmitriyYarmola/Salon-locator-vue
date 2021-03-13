@@ -5,6 +5,6 @@ import '@/styles/global.style.scss'
 import { router } from '@/routers'
 
 const app = createApp(App)
-app.use(store)
 app.use(router)
+app.use(store)
 app.mount('#app')
